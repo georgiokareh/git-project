@@ -3,7 +3,7 @@ from datetime import datetime, date, timedelta
 import os
 import sys
 import re
-
+import sqlite3
 class StudySession:
     def __init__(self, subject: str, date: str, hours: float, notes: str):
         self._subject = subject
@@ -101,8 +101,9 @@ def log_session(sessions):
         except ValueError as e:
             print(e)
     notes = input("Enter any notes (optional): ")
-    sessions.append(StudySession(subject, date, hoursF, notes))
-    save_sessions(sessions, "study_sessions.csv")
+    session = StudySession(subject, date, hoursF, notes)
+    sessions.append(session)
+    save_session_to_db("study_sessions.db", session)
     print("Study session logged successfully!")
     return sessions
 def view_sessions(sessions: list):
@@ -176,16 +177,43 @@ def export_report(sessions: list):
         f.write("\n" + "=" * 50 + "\n")
         f.write(f"GRAND TOTAL: {calculate_total_hours(sessions)} hrs across {len(sessions)} sessions\n")
     print("Report saved to study_report.txt.")
+    
+def init_db(db):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, date TEXT, hours REAL, notes TEXT)")
+    
+    conn.commit()
+    conn.close()
+
+def load_sessions_from_db(db):
+    sessions = []
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT subject, date, hours, notes FROM sessions")
+    for row in cursor.fetchall():
+        sessions.append(StudySession(row[0], row[1], row[2], row[3]))
+    conn.close()
+    return sessions
+
+def save_session_to_db(db, session: StudySession):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO sessions (subject, date, hours, notes) VALUES (?,?,?,?)", (session.subject, session.date, session.hours, session.notes))
+    conn.commit()
+    conn.close()
+
 def main():
     if len(sys.argv) == 2 and sys.argv[1] == "--report":
-        sessions = load_sessions("study_sessions.csv")
+        init_db("study_sessions.db")
+        sessions = load_sessions_from_db("study_sessions.db")
         export_report(sessions)
         return
     elif len(sys.argv) > 1:
         print("Unknown argument. Use --report or run with no arguments.")
         return
-    
-    sessions = load_sessions("study_sessions.csv")
+    init_db("study_sessions.db")
+    sessions = load_sessions_from_db("study_sessions.db")
     while True:
         display_menu()
         choice = input("Choose an option: ")
@@ -215,5 +243,27 @@ if __name__ == "__main__":
     
 
                         
-               
-        
+def init_db(db):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT, date TEXT, hours REAL, notes TEXT)")
+    
+    conn.commit()
+    conn.close()
+def load_sessions_from_db(db):
+    sessions = []
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("SELECT subject, date, hours, notes FROM sessions")
+    for row in cursor.fetchall():
+        sessions.append(StudySession(row[0], row[1], row[2], row[3]))
+    conn.close()
+    return sessions
+
+def save_session_to_db(db, session: StudySession):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO sessions (subject, date, hours, notes) VALUES (?,?,?,?)", (session.subject, session.date, session.hours, session.notes))
+    conn.commit()
+    conn.close()
+    
