@@ -52,7 +52,7 @@ def main():
     plt.scatter(x_train, y_train, label ='Training data')  # this plots your data points
     plt.plot(x_train, w*x_train + b, label = 'Regression line')
     plt.xlabel('Hours studied')
-    plt.ylabel('Score', rotation = 90, ha = 'right')
+    plt.ylabel('Score')
     plt.title('ML predictions of final grade based on hours studied')
     plt.legend()
     plt.show()
