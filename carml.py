@@ -25,7 +25,7 @@ def grad_loop(x, y, w, b , alpha, nb_iter):
         b -= alpha * dj_db
         J_history.append(cost(x, y, w, b))
         if (i+1) % 200 == 0:
-            print(f"Iteration : {i+1}, Cost function : {J_history[-1]}")
+            print(f"Iteration : {i+1}, Cost function : {J_history[-1]:2f}")
     return w, b, J_history
 def main():
     split = int(0.99 * x.shape[0])
