@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.vscode/
+*.db
+# leftover nested repo, safe to delete once you have confirmed nothing in it is needed
+ml-latest-small/
