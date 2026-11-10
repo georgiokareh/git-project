@@ -51,7 +51,7 @@ def load_data():
     user_ids = pd.Index(np.sort(ratings['userId'].unique()))
     assert len(movie_ids) == 9742 and len(user_ids) == 610
     assert movie_ids.is_unique and user_ids.is_unique
-    return ratings, movie_ids, user_ids
+    return ratings, movies, movie_ids, user_ids
 def rmse(preds, truth):
     preds = np.asarray(preds)
     truth = np.asarray(truth)
